@@ -1,0 +1,74 @@
+---
+date: '2019-10-02'
+title: 'Synching a git fork'
+categories:
+  - Coding
+  - Help
+---
+
+Sync a fork of a repository to keep it up-to-date with the upstream repository.
+
+### The Setup
+
+Before you can sync, you need to add a remote that points to the upstream repository. You may have done this when you originally forked.
+
+> Tip: Syncing your fork only updates your local copy of the repository; it does not update your repository on GitHub.
+
+```shell
+# List the current remotes
+$ git remote -v
+origin  https://github.com/user/repo.git (fetch)
+origin  https://github.com/user/repo.git (push)
+
+# Set a new remote
+$ git remote add upstream https://github.com/otheruser/repo.git
+
+# Verify new remote
+$ git remote -v
+origin    https://github.com/user/repo.git (fetch)
+origin    https://github.com/user/repo.git (push)
+upstream  https://github.com/otheruser/repo.git (fetch)
+upstream  https://github.com/otheruser/repo.git (push)
+```
+
+### Syncing
+
+There are two steps required to sync your repository with the upstream: first you must fetch from the remote, then you must rebase or merge the desired branch into your local branch.
+
+#### Fetching
+
+Fetching from the remote repository will bring in its branches and their respective commits. These are stored in your local repository under special branches.
+
+```shell
+# Fetch all the branches of that remote into remote-tracking branches,
+# such as upstream/master:
+$ git fetch upstream
+
+# Make sure that you're on your master branch:
+git checkout master
+```
+
+We now have the upstream's master branch stored in a local branch, upstream/master
+
+```shell
+# List all local and remote-tracking branches
+$ git branch -va
+* master                  a422352 My local commit
+  remotes/origin/HEAD     -> origin/master
+  remotes/origin/master   a422352 My local commit
+  remotes/upstream/master 5fdff0f Some upstream commit
+```
+
+#### Rebase
+
+Last step is to rebase your branch and push the changes to your branch.
+
+```shell
+# rebase
+git rebase upstream/master
+
+# push changes to github
+git push -f origin master
+```
+
+> You only need to use the -f the first time after you've rebased.
