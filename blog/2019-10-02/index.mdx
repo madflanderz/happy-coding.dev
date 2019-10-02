@@ -6,7 +6,7 @@ categories:
   - Help
 ---
 
-Sync a fork of a repository to keep it up-to-date with the upstream repository.
+This post is about to sync a fork of a repository to keep it up-to-date with the upstream (the fork base) repository.
 
 ### The Setup
 
@@ -72,3 +72,5 @@ git push -f origin master
 ```
 
 > You only need to use the -f the first time after you've rebased.
+
+If you don't want to rewrite the history of your master branch, (for example because other people may have cloned it) then you should replace the last command with _**git merge upstream/master**_. However, for making further pull requests that are as clean as possible, it's probably better to rebase.
