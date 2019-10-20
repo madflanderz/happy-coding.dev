@@ -51,16 +51,13 @@ const IndexPage = ({
       <Hero>
         <h1>Hi.</h1>
         <p>
-          I&apos;m Martin Anders, a Senior Frontend Developer with more then 10
-          years of industry experience, specializing in developing React apps
-          with the best UX users can get.
+          I&apos;m Martin Anders, a Senior Fullstack Developer with more then 10 years of
+          industry experience, specialized in developing React and React Native.
         </p>
         <Link to="/contact">
           <Button
             big
-            onClick={() =>
-              window.open('mailto:hello@happy-coding.dev', '_self')
-            }
+            onClick={() => window.open('mailto:hello@happy-coding.dev', '_self')}
           >
             <svg
               width="1792"
