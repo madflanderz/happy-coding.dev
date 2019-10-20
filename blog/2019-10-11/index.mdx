@@ -6,24 +6,30 @@ categories:
   - React
 ---
 
-This article is about a very interesting way of handling state in your React app with [Overmind.js](https://overmind.js)
+This article is about a very interesting way of handling state in your React app with [Overmind.js][Overmind]
 
 ## Why Overmind?
 
 There are many tools for state management out there like Context-API, Redux, MobX or MST. So why we want another one?
 
-In my latests client project i used context based state like (very well explained here by KentCDotts) together with ApolloClient. I'm a huge fan of React Hooks and together with Context-API it's a very nice way to handle state in your application. It seemed to me that i don't need any bigger state management solution like Redux anymore. In the beginning this was totally fine and i was happy with this approach but after two months the app became bigger and complexity was growing. I was not happy anymore and decided it's time to switch to a different solution. 
+In my latests client project i used [context based state][How to use context] together with ApolloClient. I'm a huge fan of React Hooks and together with Context-API it's a very nice way to handle state in your application. It seemed to me that i don't need any bigger state management solution like [Redux] anymore. In the beginning this was totally fine and i was happy with this approach but after two months the app became bigger and complexity was growing. I was not happy anymore and decided it's time to switch to a different solution. 
 
-I liked Redux a lot and felt very comfortable in it but it always had a smell of "to-much-code" for small stuff. MobX on the other hand i never really used but heard only good things about it. After doing some research i found another library called [Overmind](hppt://overmind.js) which locked pretty interesting.
+I liked Redux a lot and felt very comfortable in it but it always had a smell of "to-much-code" for small stuff. [MobX] on the other hand i never really used but heard only good things about it. After doing some research i found another library called [Overmind] which locked pretty interesting.
 
 ## Combining the best of the other solutions together
 
 Overmind was created with the goal to give the best developer experience as possible and also to have strong typescript support. The framework internals are hidden to the developer and the api is very simple and straight forward.
 
+- strong typescript support 
+- very simple API 
+- good documentation and easy to learn
+- great devtools
 
-### Strong typescript support
+One of the best things i like is the strong typescript integration of Overmind and how you get it for free, You don't even have to write much types at all.
 
-One of the best things i like is the strong typescript integration of Overmind and how you get it for free. You only have to define your state and all the rest is infered from it. Even if is is Typescript you can define your state as simple like this:
+### Defining state
+
+Define your state as a simple object. Even if it is Typescript you can define your state as simple like this:
 
 ```ts
 const state = {
@@ -31,12 +37,15 @@ const state = {
   title: "", 
   // count: number
   count: 0,  
-  // foo: Foo or null
-  foo: null as Foo 
+  // foo: Foo | null
+  foo: null as Foo | null,
 }
 ```
 
-Everywhere you use the state you have full typescript support and get code completion etc.
+
+> **HINT:** Don't use undefined or ? in your state because it is just considered an anti pattern because any undefined value on a state will not show up in the devtools, it will not be passed to server, local storage etc.
+
+Everywhere you use the state you have full typescript support and get code completion. SIMPLE, right?
 
 ### Derived state
 
@@ -52,14 +61,13 @@ const state = {
 }
 ```
 
-In redux you would write selectors and use libraries like [reselect!!](LINK TO RESELECT) to memoize the calculation.
-But not in Overmind it's already included. SIMPLE, right?
+In [Redux] you would have to write selectors and use libraries like [Reselect] to memoize the calculation.
+But not in [Overmind], it's already included. SIMPLE, right?
 
 ### State mutation 
 
-It is damn simple to mutate state with actions. Actions have access to your state and can directly change properties. Overmind will magically take care that only components affected by these change will rerender. You can not mutate state outside actions, that means you can't accidentally try to change them in your views.
+All state mutation is done with actions. Actions have access to your state and can directly change properties.
 
-There is no spread madness like in redux that comes with *immutability*. Just change what you want to change, SIMPLE, right?
 
 ```ts
 function incCount(state) {
@@ -73,19 +81,35 @@ function setCount(state, value) {
 }
 ```
 
+> **HINT:** You can not mutate state outside actions, this means you can't accidentally try to change them in your views.
+
+There is no spread madness like in [Redux] that comes with *immutability*. Just change what you want to change, SIMPLE, right?
+
 ### Side effects
 
-??? How about side effects like doing api calls or other stuff an app has to do under the hood like reading/writing from localStorage. to do side effects
+Effects allow you to decouple your app completely from 3rd party APIs. You can read more about them here: [overmind effects]
 
-effects allow you to decouple your app from 3rd party side effects like api calls etc.
+> **From the docs:** Developing applications is not only about managing state, but also managing side effects. A typical side effect would be an HTTP request or talking to localStorage. In Overmind we just call these effects. 
+
+Effects should be "initialized" in the onInitialize of overmind. There you can provide them with all stuff they need like getters for getting current state or actions to execute.
+
+```
+export const onInitialize = ({ state, effects, actions }) => {
+  effects.myCoolEffect.initialize({
+    getSomeState: state.partOfState,
+    onMoviesLoadSuccess: actions.setMovies
+  })
+}
+```
 
 
 ### Access state and actions in components
 
-To get state in a component you have to *connect* it to overmind. This is done with the *useOvermind* hook. All you have to do is to deconstruct the hook result and you have all you need. 
+To get state in a component you have to [connect][overmind connecting components] it to overmind. This is done with the *useOvermind* hook that provides state and actions. All you have to do is to deconstruct the hook result and you have all you need. 
 
 ```ts
 function Counter() => {
+  // hint: you get fully typed state and actions here
   const {
     state: { count },
     actions: {incCount}
@@ -100,8 +124,15 @@ function Counter() => {
 }
 ```
 
-This is all? Yes, it is nuts how easy it is to get state and actions into your components. But wait: How can we prevent the component from rerendering when other parts of the global state changed like the *title*? Our component is only interested in the *count* property and only wants to rerender if this value changes. Guess what: 
+This is all? Yes, it is nuts how easy it is to get state and actions into your components. But wait: How can we prevent the component from rerendering when other parts of the global state changed like the **title**? Our component is only interested in the **count** property and only wants to rerender if this value changes. Guess what: 
 Overmind nows exactly which parts of the state the component is using and updates the component only when this part of the state changes. SIMPLE, right?
+
+### Mutation tracking
+
+Overmind is using mutation tracking instead of immutability, you can read more about this concept here: [immutability vs. mutation tracking].
+
+> **Christian Alfoni:** How you detect the changes and update the UI should just work and be performant! With mutation tracking you put your faith in the system. It relieves you of the mental load of figuring out how components update, it just works and optimally so.
+
 
 ### Powerfull devtools
 
@@ -111,9 +142,10 @@ Overmind comes with very powerfull devtools. You can use the [VSCode extension](
 npx overmind-devtools
 ```
 
-You can not only see all your state and derived state, it's even possible to change it directly inside the tool. You can also see all executed actions with their paylod and what part of the state they changed. Sending an action? Sure, you can do this as well. 
+You can see all your state and derived state, it's even possible to change it directly inside the tool. You can also see all executed actions with their paylod and what part of the state they changed. Sending an action? Sure, you can do this as well. 
 
 The view of your app is just an implementation detail. You can write and execute your whole application logic without any views just with the help of the devtools. This is amazing and SIMPLE, right?
+
 
 
 ### Functional programming style 
@@ -121,53 +153,39 @@ The view of your app is just an implementation detail. You can write and execute
 I'm a big fan of functional grogramming paradigms that where introduced with react and became the default in the react world after the release of hooks. Overmind perfectly fits in this. You write only functions, there is no need for classes.
 When i had a look in MobX this was a big downside for me because all the examples use classes and i don't want to use classes anymore if possible.
 
+What about pure functions? Mhhh yes sure, Overmind actions are not as pure as regular reducers. In practice it's not a real downside to me because you can test your actions very easy anyway.
+
 ### Documentation and learning curve
 
-Overmind has a very good documentation. I read it, started to try it in my appliaction and after 3 hours i had refactored my whole app. Cool side note is that this was super easy because i was very confident to do this because of  [react-testing-library](https://testing-library.com/react). The tests were testing the functionallity of the components without implementation details. I had to do only very little adjustments in test initialization.
+Overmind has a very good documentation. I read it, started to try it in my appliaction and after 3 hours i had refactored my whole app. Cool side note is that this was super easy because i was very confident to do this because of  [react-testing-library]. The tests were testing the functionallity of the components without implementation details. I had to do only very little adjustments in test initialization.
 
-After few hours you should already feel very comfortable. Back in the days it took me weeks to wrap my head around Redux.  I tried also MobX while learning MobX and it was much harder to read through the docs and to understand all this *observer* and *observerable* stuff if this is completly new to you.
+After few hours you should already feel very comfortable. Back in the days it took me weeks to wrap my head around Redux.  I tried also MobX while learning MobX and it was much harder to read through the docs and to understand all this **observer** and **observable** stuff if this is completly new to you.
+The framework internals are hidden to the developer and the api is very simple and straight forward. There is no additional hidden stuff to learn like [reselect], [redux-sagas], [redux-thunk] etc.
 
-The framework internals are hidden to the developer and the api is very simple and straight forward. There is no additional hidden stuff to learn like reselect, redux-sagas, redux-thunk etc.
+### Summary
 
+I'm so happy i found [Overmind], it makes really a lot of fun to use and it simplyfied my app completely. I hope this article can help to convince you to give it a try.
 
-## Useful information
+#### Useful Links
 
-Overmind has very nice docs and you should read it before using it.
-https://www.overmindjs.org/introduction?view=react&typescript=false
-
-There are also some nice videos
-https://www.overmindjs.org/videos?view=react&typescript=true
-
-Don't forget to use the overmind devtools. You can use the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=christianalfoni.overmind-devtools-vscode) or use the standalone version
-
-```
-npx overmind-devtools
-```
-
-#### DONT use undefined or ? in state
-
-Comment by ChristianAlfoni (creator of overmind):
-
-> Yeah, it is just considered an anti pattern because any undefined value on a state will not show up in the devtools, it will not be passed to server, local storage etc. Also related to tracking if you for example iterate an object where values are undefined that property will not be tracked, meaning when you assign a value to that property later components/derived will not react to it
-
-#### DONT update state in effects
-
-Effects should be "initialized" in the onInitialize of overmind. There you can provide them with all stuff they need like getters for getting current state or actions to execute.
-
-```
-export const onInitialize = ({ state, effects, actions }) => {
-  effects.myCoolEffect.initialize({
-    getSomeState: state.partOfState,
-    onMoviesLoadSuccess: actions.setMovies
-  })
-}
-```
+- [Overmind docs with great introduction][overmind introduction]
+- [Videos of the creator Christian Alfoni himself ][overmind videos]
+- [immutability vs. mutation tracking]
 
 
+[Overmind]: https://overmind.js
+[overmind effects]: https://overmindjs.org/guides/beginner/04_runningsideeffects?view=react&typescript=false
+[overmind introduction]: https://www.overmindjs.org/introduction?view=react&typescript=false
+[overmind videos]: https://www.overmindjs.org/videos?view=react&typescript=true
+[overmind connecting components]: https://overmindjs.org/guides/beginner/07_connectingcomponents?view=react&typescript=false
+[How to use context]: https://kentcdodds.com/blog/how-to-use-react-context-effectively
+[Redux]: https://redux.js.org/
+[MobX]: https://mobx.js.org
+[Reselect]: https://github.com/reduxjs/reselect
+[redux-sagas]: https://redux-saga.js.org/
+[redux-thunk]: https://github.com/reduxjs/redux-thunk
+[Immer]: https://immerjs.github.io/immer/
+[immutability]: https://redux.js.org/faq/immutable-data
+[immutability vs. mutation tracking]: https://itnext.io/updating-uis-value-comparison-vs-mutation-tracking-9f6fe912dd9a
+[react-testing-library]: https://testing-library.com/react
 
-ideas:
-- mutation tracking instead of immutability https://itnext.io/updating-uis-value-comparison-vs-mutation-tracking-9f6fe912dd9a
->  With mutation tracking you put your faith in the system. It relieves you of the mental load of figuring out how components update, it just works and optimally so.
-- redux list item chnage will trigger to rerender the whole list
-> How you detect the changes and update the UI should just work and be performant!
-> You can not mutate state outside actions, an error is thrown
