@@ -6,26 +6,28 @@ categories:
   - React
 ---
 
-This article is about a very interesting way of handling state in your React app with [Overmind.js][Overmind]
+![](./cover_juggler.jpg)
+
+Handling state in an application is like juggling with data. This article is about a very interesting way of handling state in your React app with [Overmind.js][Overmind]
 
 ## Why Overmind?
 
-There are many tools for state management out there like Context-API, Redux, MobX or MST. So why we want another one?
+There are many tools for state management out there like [Context-API][How to use context], [Redux], [MobX] or [MST]. So why we want another one?
 
-In my latests client project i used [context based state][How to use context] together with ApolloClient. I'm a huge fan of React Hooks and together with Context-API it's a very nice way to handle state in your application. It seemed to me that i don't need any bigger state management solution like [Redux] anymore. In the beginning this was totally fine and i was happy with this approach but after two months the app became bigger and complexity was growing. I was not happy anymore and decided it's time to switch to a different solution. 
+In my latests client project i used [context based state][How to use context] together with [Apollo Client]. I'm a huge fan of React Hooks and together with Context-API it's a very nice way to handle state in your application. It seemed to me that i don't need any bigger state management solution like [Redux] anymore. In the beginning this was totally fine and i was happy with this approach but after two months the app became bigger and complexity was growing. I was not happy anymore and decided it's time to switch to a different solution. 
 
-I liked Redux a lot and felt very comfortable in it but it always had a smell of "to-much-code" for small stuff. [MobX] on the other hand i never really used but heard only good things about it. After doing some research i found another library called [Overmind] which locked pretty interesting.
+Back in the days I used and liked [Redux] a lot and felt very comfortable in it.  But it always had a smell of "to-much-code" for small stuff. [MobX] on the other hand i never really used but heard only good things about it. After doing some research i found another relativ new library called [Overmind] which locked pretty interesting.
 
 ## Combining the best of the other solutions together
 
-Overmind was created with the goal to give the best developer experience as possible and also to have strong typescript support. The framework internals are hidden to the developer and the api is very simple and straight forward.
+Overmind was created by [Christian Alfoni] with the goal to give the best developer experience as possible and also to have strong typescript support. The framework internals are hidden to the developer and the api is very simple and straight forward.
 
 - strong typescript support 
 - very simple API 
 - good documentation and easy to learn
 - great devtools
 
-One of the best things i like is the strong typescript integration of Overmind and how you get it for free, You don't even have to write much types at all.
+One of the best things i like is the strong typescript integration of Overmind and how you get it for nearly free. Because you don't have to write much types at all.
 
 ### Defining state
 
@@ -93,7 +95,7 @@ Effects allow you to decouple your app completely from 3rd party APIs. You can r
 
 Effects should be "initialized" in the onInitialize of overmind. There you can provide them with all stuff they need like getters for getting current state or actions to execute.
 
-```
+```ts
 export const onInitialize = ({ state, effects, actions }) => {
   effects.myCoolEffect.initialize({
     getSomeState: state.partOfState,
@@ -162,15 +164,25 @@ Overmind has a very good documentation. I read it, started to try it in my appli
 After few hours you should already feel very comfortable. Back in the days it took me weeks to wrap my head around Redux.  I tried also MobX while learning MobX and it was much harder to read through the docs and to understand all this **observer** and **observable** stuff if this is completly new to you.
 The framework internals are hidden to the developer and the api is very simple and straight forward. There is no additional hidden stuff to learn like [reselect], [redux-sagas], [redux-thunk] etc.
 
+### Running examples
+
+Here you can see a working example on Codesandbox:
+
+<iframe src="https://codesandbox.io/embed/overmind-todomvc-typescript-39h7y?fontsize=14" title="overmind-todomvc-typescript" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
+
+[Codesandbox Example Typescript]
+
 ### Summary
 
 I'm so happy i found [Overmind], it makes really a lot of fun to use and it simplyfied my app completely. I hope this article can help to convince you to give it a try.
 
 #### Useful Links
 
+- [Codesandbox Example Typescript]
 - [Overmind docs with great introduction][overmind introduction]
 - [Videos of the creator Christian Alfoni himself ][overmind videos]
 - [immutability vs. mutation tracking]
+- Cover image by <a href="https://pixabay.com/de/users/moise_theodor-2099584/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1216853">Theodor Moise</a> on <a href="https://pixabay.com/de/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1216853">Pixabay</a>
 
 
 [Overmind]: https://overmind.js
@@ -178,9 +190,12 @@ I'm so happy i found [Overmind], it makes really a lot of fun to use and it simp
 [overmind introduction]: https://www.overmindjs.org/introduction?view=react&typescript=false
 [overmind videos]: https://www.overmindjs.org/videos?view=react&typescript=true
 [overmind connecting components]: https://overmindjs.org/guides/beginner/07_connectingcomponents?view=react&typescript=false
+[Christian Alfoni]: https://christianalfoni.herokuapp.com/
 [How to use context]: https://kentcdodds.com/blog/how-to-use-react-context-effectively
 [Redux]: https://redux.js.org/
 [MobX]: https://mobx.js.org
+[MST]: https://github.com/mobxjs/mobx-state-tree
+[Apollo Client]: https://www.apollographql.com/docs/react/
 [Reselect]: https://github.com/reduxjs/reselect
 [redux-sagas]: https://redux-saga.js.org/
 [redux-thunk]: https://github.com/reduxjs/redux-thunk
@@ -188,4 +203,5 @@ I'm so happy i found [Overmind], it makes really a lot of fun to use and it simp
 [immutability]: https://redux.js.org/faq/immutable-data
 [immutability vs. mutation tracking]: https://itnext.io/updating-uis-value-comparison-vs-mutation-tracking-9f6fe912dd9a
 [react-testing-library]: https://testing-library.com/react
-
+[Codesandbox Example]: https://codesandbox.io/s/overmind-todomvc-split-xdh41
+[Codesandbox Example Typescript]: https://codesandbox.io/s/overmind-todomvc-typescript-39h7y?fontsize=14
