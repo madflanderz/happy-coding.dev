@@ -55,10 +55,7 @@ const IndexPage = ({
           industry experience, specialized in developing React and React Native.
         </p>
         <Link to="/contact">
-          <Button
-            big
-            onClick={() => window.open('mailto:hello@happy-coding.dev', '_self')}
-          >
+          <Button big>
             <svg
               width="1792"
               height="1792"
