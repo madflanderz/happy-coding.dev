@@ -1,0 +1,19 @@
+---
+date: "2019-10-21"
+title: "Restart Rails app"
+categories:
+  - Coding
+  - Help
+---
+
+This post is about the easiest way to restart a rails server.
+
+### What happend
+
+Today i encountered some errors on my side project [Graffiti-Unlimited.com]. Some users saw an error page directly after login. I found the reason for this problem very fast **But** i a had a big problem - i was at work and couldn't fix and deploy like i regulary do.
+
+#### Restart server with restart.txt
+
+One eays way to restart a running passenger rails server is by touching the file `restart.txt` in the application directory's `tmp` subdirectory. Passenger needs maybe some seconds to recognize the change and will restart the application.
+
+[graffiti-unlimited.com]: graffiti-unlimited.com

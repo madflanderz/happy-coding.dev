@@ -1,0 +1,27 @@
+---
+date: "2019-10-20"
+title: "PhpMyAdmin on MAC"
+categories:
+  - Coding
+  - Help
+---
+
+This post is about how to use PhpMyAdmin on your MAC.
+
+### Turn on and start apache server
+
+```bash
+sudo apachectl start
+```
+
+Open [http://localhost/] in your browser and you should see "It works!"
+
+### Turn on PHP
+
+1. Open Terminal and type sudo nano /etc/apache2/httpd.conf and press enter
+2. Press Ctrl+W which will bring up a search
+3. Search for php and press enter. 
+4. Delete the # from #LoadModule php7_module libexec/apache2/libphp7.so
+5. Press Ctrl+O followed by Enter to save the change you just made
+6. Press Ctrl+X to exit nano
+7. Type sudo apachectl restart and press enter
